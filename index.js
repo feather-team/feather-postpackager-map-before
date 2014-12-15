@@ -17,7 +17,7 @@ module.exports = function(ret, conf, setting, opt){
     //process start
     var process = ['collect-resource', 'collect-deps', 'clean-same-domain-incss'];
 
-    if(!feather.config.get('inlineMode')){
+    if(!feather.config.get('staticMode')){
         //非inline模式
         process.push('collect-component');
         process.push('static-position');
