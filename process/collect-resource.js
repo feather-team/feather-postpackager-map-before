@@ -171,9 +171,19 @@ module.exports = function(ret, conf, setting, opt){
                 uri: file.getUrl(opt.md5, opt.domain)
             };  
         });
+
+        var file = feather.file.wrap(feather.project.getProjectPath() + '/static/js/feather.config.js');
+        var config = feather.config.get('require.config');
+        var content = require('uglify-js').minify('require.config=' + feather.util.json(config), {fromString: true}).code;
+
+        file.setContent(content);
+        ret.pkg[file.subpath] = file;
+        ret.map.res[file.id] = {
+            uri: file.getUrl(opt.md5, opt.domain)
+        };
     }
 
-    ret.feather.commonResource = {headJs: ['/static/js/feather.js'], bottomJs: [], css: []};
+    ret.feather.commonResource = {headJs: ['/static/js/feather.js', '/static/js/feather.config.js'], bottomJs: [], css: []};
     opt.live && ret.feather.commonResource.bottomJs.push('http://127.0.0.1:8132/livereload.js');
 
     ret.feather.uriMap = feather.util.merge(ret.feather.uriMap || {}, getPaffeUriMap(ret, opt));
