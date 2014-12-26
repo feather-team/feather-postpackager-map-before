@@ -19,7 +19,7 @@ module.exports = function(id, targetId, type){
 	
 	id = _(id);
 
-	parent.innerHTML = id.innerHTML.replace(reg, '</' + type + '>');
+	parent.innerHTML = (id.value || id.innerHTML).replace(reg, '</' + type + '>');
 
 	for(var i = 0; i < parent.childNodes.length; i++){
 		var child = parent.childNodes[i--], tagName = child.tagName, text = child.innerHTML, element;
