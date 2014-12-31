@@ -273,7 +273,7 @@ Module.getPath = function(path){
         path = path.replace(item[0], item[1]);
     }); 
 
-    if(baseurl && path[0] != '/') path = baseurl.replace(/\/+$/, '') + '/' + path;
+    if(baseurl && path.charAt(0) != '/') path = baseurl.replace(/\/+$/, '') + '/' + path;
 
     return path.replace(/\/+/g, '/');
 };
