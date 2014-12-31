@@ -20,8 +20,6 @@ module.exports = function(ret){
     var deps = ret.feather.deps = ret.feather.deps || {};
 
     feather.util.map(ret.src, function(subpath, file){     
-        var _deps = [];
-
         if(file.isHtmlLike || file.isCssLike || file.isJsLike){
             var requires = [];
 
@@ -44,6 +42,21 @@ module.exports = function(ret){
                     requires.push(require);
                 }
             });
+
+            if(file.isHtmlLike){
+                feather.util.map(ret.feather.resource[subpath], function(type, rs){
+                    if(type == 'headJs' || type == 'bottomJs'){
+                        requires.forEach(function(require){
+                            var index = rs.indexOf(require);
+
+                            if(index > -1){
+                                rs.splice(index, 1);
+                            }
+                        });
+                    }
+
+                });
+            }
 
             requires.forEach(function(require){
                 if(!feather.util.isRemoteUrl(require) && !ret.feather.urlMap[require]){

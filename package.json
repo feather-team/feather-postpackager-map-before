@@ -1,6 +1,6 @@
 {
   "name": "feather-postpackager-map-before",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "feather postpackager before map",
   "main": "index.js",
   "scripts": {
