@@ -221,7 +221,6 @@ Module.load = function(path, notice){
                 source.onload = source.onerror = source.onreadystatechange = null;
                 //手动触发已加载方法，防止文件是非模块，require.async之类，导致无法通知依赖模块执行，也有可能是多个文件合并，需要挨个通知
                 Module.loaded(_path);
-                source.parentNode.removeChild(source);
             }
         }
 
