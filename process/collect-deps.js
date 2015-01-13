@@ -19,7 +19,15 @@ function getRealPath(path){
 module.exports = function(ret){
     var deps = ret.feather.deps = ret.feather.deps || {};
 
-    feather.util.map(ret.src, function(subpath, file){     
+    feather.util.map(ret.map.pkg || {}, function(key, pkg){
+        var file = ret.pkg[ret.feather.uriMap[pkg.uri]];
+
+        (pkg.deps || []).forEach(function(dep){
+            file.addRequire(dep);
+        });
+    });
+
+    feather.util.map(feather.util.merge(feather.util.merge({}, ret.src), ret.pkg), function(subpath, file){     
         if(file.isHtmlLike || file.isCssLike || file.isJsLike){
             var requires = [];
 
