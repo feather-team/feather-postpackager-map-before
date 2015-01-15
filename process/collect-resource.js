@@ -158,7 +158,7 @@ module.exports = function(ret, conf, setting, opt){
     if(!modulename || modulename == 'common'){
         //内置loadjs 直接生成
         ['feather.js', 'pagelet.js'].forEach(function(item){
-            var file = feather.file.wrap(feather.project.getProjectPath() + '/static/js/' + item);
+            var file = feather.file.wrap(feather.project.getProjectPath() + '/static/' + item);
             var content = feather.util.read(__dirname + '/../vendor/js/' + item);
 
             if(opt.optimize){
@@ -172,7 +172,7 @@ module.exports = function(ret, conf, setting, opt){
             };  
         });
 
-        var file = feather.file.wrap(feather.project.getProjectPath() + '/static/js/feather.config.js');
+        var file = feather.file.wrap(feather.project.getProjectPath() + '/static/feather.config.js');
         var config = feather.config.get('require.config');
         var content = require('uglify-js').minify('require.config=' + feather.util.json(config), {fromString: true}).code;
 
@@ -183,7 +183,7 @@ module.exports = function(ret, conf, setting, opt){
         };
     }
 
-    ret.feather.commonResource = {headJs: ['/static/js/feather.js', '/static/js/feather.config.js'], bottomJs: [], css: []};
+    ret.feather.commonResource = {headJs: ['/static/feather.js', '/static/feather.config.js'], bottomJs: [], css: []};
     opt.live && ret.feather.commonResource.bottomJs.push('http://127.0.0.1:8132/livereload.js');
 
     ret.feather.uriMap = feather.util.merge(ret.feather.uriMap || {}, getPaffeUriMap(ret, opt));
