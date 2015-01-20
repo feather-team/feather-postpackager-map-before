@@ -22,6 +22,13 @@ module.exports = function(ret, conf, setting, opt){
 
 			content = content.replace(REG, function(all, url, last){
 		        if(url){
+		        	var quote = '';
+
+		        	if(/['"]/.test(url.charAt(0))){
+		        		quote = url.charAt(0);
+		        		url = url.substring(1);
+		        	}
+
 		        	if(url.substring(0, len) == domain){
 		        		url = url.substring(len);
 		        	}
@@ -29,6 +36,8 @@ module.exports = function(ret, conf, setting, opt){
 		        	if(a2r && url.indexOf('/') === 0){
 		        		url = path.relative(dir, url).replace(/\\/g, '/');
 		        	}
+
+		        	url = quote + url;
 
 		            if(all.indexOf('@') === 0){
 		                all = '@import url(' + url + ')' + last;
