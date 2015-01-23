@@ -354,7 +354,7 @@ require.mergeConfig = function(config){
                     });
                 }
 
-                _config.map[name] = yMap;
+                tmp[name] = yMap;
             });
         }else if(i == 'deps'){
             each(c, function(dep, name){
@@ -365,6 +365,8 @@ require.mergeConfig = function(config){
         }else{
             tmp = c;
         }
+
+        _config[i] = tmp;
     });
 };
 
