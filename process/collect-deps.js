@@ -42,7 +42,7 @@ module.exports = function(ret){
                     require = getRealPath(require);
                 }
 
-                if(file.isJsLike && (file.isComponentLike || file.isPageletLike)){
+                if(file.isJsLike && !file.isMod){
                     if(require.replace(/\.css$/, '.js') != subpath){
                         requires.push(require);
                     }
