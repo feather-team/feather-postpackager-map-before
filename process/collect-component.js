@@ -3,30 +3,30 @@
 'use strict';
 
 module.exports = function(ret){
-    var components = ret.feather.components = ret.feather.components || {};
+    ret.feather.components = ret.feather.components || {};
 
     feather.util.map(ret.src, function(subpath, file){     
         if(file.isHtmlLike){
-            var requires = [];
+            var components = [];
 
-            (file.requires || []).forEach(function(require){
-                var file = feather.file.wrap(require);
+            (file.extras.components || []).forEach(function(component){
+                var file = feather.file.wrap(component);
 
                 if(file._isText && !file.isJsonLike && !file.isCssLike && !file.isJsLike){
                     if(file.exists()){
-                        requires.push(file.subpath);
+                        components.push(file.subpath);
                     }else{
-                        if(ret.feather.urlMap[require]){
-                            requires.push(require);
+                        if(ret.feather.urlMap[component]){
+                            components.push(component);
                         }else{
-                            feather.console.warn(subpath + ':load ' + require + ' is not exists!');
+                            feather.console.warn(subpath + ':load component [' + component + '] is not exists!');
                         }
                     }
                 }
             });
             
-            if(requires.length){
-                components[subpath] = requires;
+            if(components.length){
+                ret.feather.components[subpath] = components;
             }
         }        
     });

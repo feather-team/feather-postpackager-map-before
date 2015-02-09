@@ -1,73 +1,26 @@
 'use strict';
 
-var RESOURCE_REG = /[\r\n]*(?:<!--[\s\S]*?-->|<script([^>]*?src=(['"])((?:<\?[\s\S]+?\?>)?.+?)\2[\s\S]*?)>\s*<\/script>|<link([^>]*?href=(['"])((?:<\?[\s\S]+?\?>)?.+?)\5[\s\S]*?)>)[\r\n]*/ig;
-var FIXED = /\b(?:feather-position|data|data-position)-fixed\b/i, HEAD = /\b(?:feather-position|data|data-position)-head\b/i, BOTTOM = /\b(?:feather-position|data|data-position)-bottom\b/i, DESTIGNORE = /\b(?:feather-position|data|data-position)-ignore\b/i;
-var ISCSS = /rel=["']?stylesheet['"]?/i;
-
-var unique = feather.util.unique;
-
 /*
 分析页面静态资源
 */
-function analyseResource(ret, opt){
+function collectResource(ret, opt){
     var resource = {}, uriMap = ret.feather.uriMap, urlMap = ret.feather.urlMap;
 
     feather.util.map(ret.src, function(subpath, file){
         if(file.isHtmlLike){
-            var headJs = [], bottomJs = [], css = [], content = file.getContent();
-
-            content = content.replace(RESOURCE_REG, function(_0, _1, _2, _3, _4, _5, _6){
-                //如果是fixed 跳过
-                if(_1 && !FIXED.test(_1)){
-                    if(opt.dest != 'preview'){
-                        if(DESTIGNORE.test(_1)) return '';
-                    }
-
-                    if(!uriMap[_3] && !urlMap[_3] && !feather.util.isRemoteUrl(_3)){
-                        feather.console.warn(subpath + ':' + _3 + ' is not exists!');
-                    }
-
-                    //头部js
-                    if(HEAD.test(_1)){
-                        headJs.push(uriMap[_3] || _3);
-                    }else{
-                        //尾部js
-                        bottomJs.push(uriMap[_3] || _3);
-                    }
-
-                    return '';
-                }else if(_4 && !FIXED.test(_4) && ISCSS.test(_4)){
-                    if(opt.dest != 'preview'){
-                        if(DESTIGNORE.test(_4)) return '';
-                    }
-
-                    if(!uriMap[_6] && !urlMap[_6] && !feather.util.isRemoteUrl(_6)){
-                        feather.console.warn(subpath + ':' + _6 + ' is not exists!');
-                    }
-
-                    //css
-                    css.push(uriMap[_6] || _6);
-                    return '';
-                }
-
-                return _0;
-            });
-
-            file.setContent(content);
-
             var rs = resource[subpath] = {};
 
-            if(headJs.length){
-                rs.headJs = unique(headJs);
-            }
+            ['headJs', 'bottomJs', 'css'].forEach(function(type){
+                (file.extras[type] || []).forEach(function(url, key){
+                    if(!uriMap[url] && !urlMap[url] && !feather.util.isRemoteUrl(url)){
+                        feather.console.warn(subpath + ':[' + url + '] is not exists!');
+                    }
 
-            if(bottomJs.length){
-                rs.bottomJs = unique(bottomJs);
-            }
+                    file.extras[type][key] = uriMap[url] || url;
+                });
 
-            if(css.length){
-                rs.css = unique(css);
-            }
+                rs[type] = feather.util.unique(file.extras[type]);
+            });
         }
     });
 
@@ -83,7 +36,7 @@ map.json转成
 
 这种形式便于以后后端借助 map表生成静态资源，并对其进行更平滑的版本更新
 */
-function getPaffeUriMap(ret, opt){
+function getFeatherUriMap(ret, opt){
     var uriMap = {};
     var _ = feather.util.merge(feather.util.merge({}, ret.src), ret.pkg);
 
@@ -99,7 +52,7 @@ function getPaffeUriMap(ret, opt){
 /*
 feather 使用的新MAP表，根据SUBPATH 获取任意版本url
 */
-function getPaffeUrlMap(ret, opt){  
+function getFeatherUrlMap(ret, opt){  
     var urlMap = {}, modulename = feather.config.get('project.modulename');
     var _ = feather.util.merge(feather.util.merge({}, ret.src), ret.pkg);
 
@@ -186,7 +139,7 @@ module.exports = function(ret, conf, setting, opt){
     ret.feather.commonResource = {headJs: ['/static/feather.js', '/static/feather.config.js'], bottomJs: [], css: []};
     opt.live && ret.feather.commonResource.bottomJs.push('http://127.0.0.1:8132/livereload.js');
 
-    ret.feather.uriMap = feather.util.merge(ret.feather.uriMap || {}, getPaffeUriMap(ret, opt));
-    ret.feather.urlMap = feather.util.merge(ret.feather.urlMap || {}, getPaffeUrlMap(ret, opt));
-    ret.feather.resource = feather.util.merge(ret.feather.resource || {}, analyseResource(ret, opt)); 
+    ret.feather.uriMap = feather.util.merge(ret.feather.uriMap || {}, getFeatherUriMap(ret, opt));
+    ret.feather.urlMap = feather.util.merge(ret.feather.urlMap || {}, getFeatherUrlMap(ret, opt));
+    ret.feather.resource = feather.util.merge(ret.feather.resource || {}, collectResource(ret, opt)); 
 };

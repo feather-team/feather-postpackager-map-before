@@ -14,7 +14,7 @@ module.exports = function(ret, conf, setting, opt){
                     "$this->load('/component/resource/usestyle" + suffix + "', $this->get('FEATHER_USE_STYLES'));",
                     "$this->load('/component/resource/usescript" + suffix + "', $this->get('FEATHER_USE_HEAD_SCRIPTS'));?>",
                     "<!--FEATHER STATIC POSITION END-->",
-                ].join("") + content  + "<!--FEATHER STATIC POSITION:BOTTOM--><?php $this->load('/component/resource/usescript" + suffix + "', $this->get('FEATHER_USE_SCRIPTS'));?><!--FEATHER STATIC POSITION END-->";
+                ].join("") + content  + "<!--FEATHER STATIC POSITION:BOTTOM--><?php $this->load('/component/resource/usescript" + suffix + "', $this->get('FEATHER_USE_BOTTOM_SCRIPTS'));?><!--FEATHER STATIC POSITION END-->";
             }else{
                 content = content.replace(/<\/head>/i, function(){
                     return [
@@ -29,7 +29,7 @@ module.exports = function(ret, conf, setting, opt){
                 }).replace(/<\/body>/i, function(){
                     return [
                         "<!--FEATHER STATIC POSITION:BOTTOM--><?php " + (debug ? " if(!$this->get('FEATHER_BOTTOM_RESOURCE_LOADED')){" : ""),
-                        "$this->load('/component/resource/usescript" + suffix + "', $this->get('FEATHER_USE_SCRIPTS'));" + (debug ? "}" : "") + "?>",
+                        "$this->load('/component/resource/usescript" + suffix + "', $this->get('FEATHER_USE_BOTTOM_SCRIPTS'));" + (debug ? "}" : "") + "?>",
                         "<!--FEATHER STATIC POSITION END--></body>"
                     ].join("");
                 });
