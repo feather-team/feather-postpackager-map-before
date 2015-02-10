@@ -15,7 +15,7 @@ module.exports = function(ret, conf, setting, opt){
     ret.feather = commonMap;
 
     //process start
-    var process = ['collect-resource', 'collect-require', 'collect-deps', 'clean-css'];
+    var process = ['collect-resource', 'collect-deps', 'clean-css'];
 
     if(!feather.config.get('staticMode')){
         //非inline模式
