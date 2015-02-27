@@ -1,4 +1,4 @@
-define('/static/js/pagelet.js', function(require, exports, module){
+define('/static/pagelet.js', function(require, exports, module){
 var doc = document, head = doc.getElementsByTagName('head')[0];
 
 function _(_id){
