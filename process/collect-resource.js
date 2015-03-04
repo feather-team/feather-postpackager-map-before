@@ -136,7 +136,12 @@ module.exports = function(ret, conf, setting, opt){
         };
     }
 
-    ret.feather.commonResource = {headJs: ['/static/feather.js', '/static/feather.config.js'], bottomJs: [], css: []};
+    ret.feather.commonResource = {bottomJs: [], css: []};
+
+    if(feather.config.get('moduleLoader')){
+        ret.feather.commonResource.headJs = ['/static/feather.js', '/static/feather.config.js'];
+    }
+
     opt.live && ret.feather.commonResource.bottomJs.push('http://127.0.0.1:8132/livereload.js');
 
     ret.feather.uriMap = feather.util.merge(ret.feather.uriMap || {}, getFeatherUriMap(ret, opt));
