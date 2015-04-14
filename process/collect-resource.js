@@ -114,6 +114,12 @@ module.exports = function(ret, conf, setting, opt){
             var file = feather.file.wrap(feather.project.getProjectPath() + '/static/' + item);
             var content = feather.util.read(__dirname + '/../vendor/js/' + item);
 
+            if(item == 'feather.js'){
+                var _file = feather.file.wrap(feather.project.getProjectPath() + '/static/feather.config.js');
+                var _config = 'require.config=' + feather.util.json(feather.config.get('require.config'));
+                content += ';' + _config;
+            }
+
             if(opt.optimize){
                 content = require('uglify-js').minify(content, {fromString: true}).code;
             }
@@ -124,22 +130,12 @@ module.exports = function(ret, conf, setting, opt){
                 uri: file.getUrl(opt.md5, opt.domain)
             };  
         });
-
-        var file = feather.file.wrap(feather.project.getProjectPath() + '/static/feather.config.js');
-        var config = feather.config.get('require.config');
-        var content = require('uglify-js').minify('require.config=' + feather.util.json(config), {fromString: true}).code;
-
-        file.setContent(content);
-        ret.pkg[file.subpath] = file;
-        ret.map.res[file.id] = {
-            uri: file.getUrl(opt.md5, opt.domain)
-        };
     }
 
     ret.feather.commonResource = {bottomJs: [], css: []};
 
     if(feather.config.get('moduleLoader')){
-        ret.feather.commonResource.headJs = ['/static/feather.js', '/static/feather.config.js'];
+        ret.feather.commonResource.headJs = ['/static/feather.js'];
     }
 
     opt.live && ret.feather.commonResource.bottomJs.push('http://127.0.0.1:8132/livereload.js');
