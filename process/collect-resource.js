@@ -134,7 +134,7 @@ module.exports = function(ret, conf, setting, opt){
 
     ret.feather.commonResource = {bottomJs: [], css: []};
 
-    if(feather.config.get('moduleLoader')){
+    if(feather.config.get('require.use')){
         ret.feather.commonResource.headJs = ['/static/feather.js'];
     }
 

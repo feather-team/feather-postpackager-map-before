@@ -17,21 +17,21 @@ function getRealPath(path){
 }
 
 module.exports = function(ret){
-    var deps = ret.feather.deps = ret.feather.deps || {};
+    var deps = ret.feather.deps = ret.feather.deps || {}, async = ret.feather.async = ret.feather.async || {};
 
-    feather.util.map(ret.src, function(subpath, file){
-        if(file.isHtmlLike || file.isJsLike && !file.isMod){
-            file.requires.length = 0;
+    // feather.util.map(ret.src, function(subpath, file){
+    //     if(file.isJsLike && !file.isMod){
+    //         file.requires.length = 0;
 
-            file.extras.requires.concat(file.extras.deps).forEach(function(require){
-                file.addRequire(require);
-            });
-        }
-    });
+    //         (file.extras.deps || []).forEach(function(require){
+    //             file.addRequire(require);
+    //         });
+    //     }
+    // });
 
     feather.util.map(ret.map.pkg || {}, function(key, pkg){
         var file = ret.pkg[ret.feather.uriMap[pkg.uri]];
-        var deps = [];
+        var async = file.extras.async || [];
 
         if(file.isJsLike){
             file.requires.length = 0;
@@ -39,16 +39,22 @@ module.exports = function(ret){
             pkg.has.forEach(function(has){
                 var tmpFile = ret.ids[has];
 
-                tmpFile.requires.forEach(function(require){
+                (tmpFile.extras.async || []).forEach(function(item){
+                    async.push(item);
+                });
+
+                (tmpFile.requires || []).forEach(function(require){
                     file.addRequire(require);
                 });
             });
+
+            file.extras.async = feather.util.unique(async);
         }
     });
 
     feather.util.map(feather.util.merge(feather.util.merge({}, ret.src), ret.pkg), function(subpath, file){     
         if(file.isHtmlLike || file.isCssLike || file.isJsLike){
-            var requires = [];
+            var requires = [], asyncs = [];
 
             (file.requires || []).forEach(function(require){
                 var tmpFile = feather.file.wrap(require);
@@ -66,6 +72,24 @@ module.exports = function(ret){
 
             if(requires.length){
                 deps[subpath] = feather.util.unique(requires);
+            }
+
+            (file.extras.async || []).forEach(function(async){
+                var tmpFile = feather.file.wrap(async);
+
+                if(tmpFile._isText && !(tmpFile.isCssLike || tmpFile.isJsLike || tmpFile.isJsonLike)) return;
+
+                if(tmpFile.exists() && (tmpFile.isCssLike || tmpFile.isJsLike)){
+                    async = tmpFile.subpath;
+                }else{
+                    async = getRealPath(async);
+                }
+
+                asyncs.push(async);
+            });
+
+            if(asyncs.length){
+                async[subpath] = feather.util.unique(asyncs);
             }
         }
     });
